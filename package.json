@@ -1,0 +1,15 @@
+{
+  "author": "CANEDO Rogelio <rogelio.canedo@gmail.com>",
+  "name": "TediousPooler",
+  "description": "connection pool for tedious",
+  "preferGlobal" : false,
+  "version": "0.0.1",
+  "repository": {
+    "type": "http",
+    "url": "https://github.com/e11137/TediousPooler.git"
+  },
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "devDependencies": {}
+}

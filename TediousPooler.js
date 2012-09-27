@@ -1,65 +1,53 @@
-var poolModule = require('generic-pool')
-  , Connection = require('tedious').Connection;
+var util = require('util'),
+    events = require('events'),
+    PoolModule = require('generic-pool'),
+    Connection = require('tedious').Connection;
 
+function TediousPooler(settings) {
+   var self = this;
+   this.logger = settings.logger || {log:function(level, message){ console.log(level+':'+message);}};
+   this.logger.log("info", "test");
+   var param = {
+      name: settings.name,
+      create: function(callback) {
+	 var ref = this,
+             connection = new Connection(settings);
+
+         connection.on('connect', function(err) {
+            console.log('connected');
+            if (err) {
+               console.log("TediousPooler :"+err,'error'); 
+            }
+	    else {
+               callback(null, connection);
+               connection.on('reusable', function() {
+                  self.pool.release(connection);
+               });
+            }
+         });
+      },
+      destroy: function(client) {
+         client.close();
+      },
+      max: settings.max,
+      min: 1,
+      idleTimeoutMillis: settings.idleTimeoutMillis
+   };
+
+   this.pool = PoolModule.Pool(param);
+}
 exports = module.exports = TediousPooler;
+util.inherits(TediousPooler, events.EventEmitter);
 
 
-function TediousPooler(config) {
-	this.pool = poolModule.Pool({
-		name     : 'tedious',
-		create   : function(callback) {
-			var connection = new Connection(config);
-			connection.on('connect', function(err) {
-				  if (err) {
-					cosnole.log(err);
-				  }
-				  else {
-				  	callback(null, connection);
-				  }
-			});
-		},
-		destroy  : function(client) { connection.close(); },
-		max      : 10,
-		idleTimeoutMillis : 30000
-	});
+TediousPooler.prototype.execute = function(callback) {
+   var ref = this;
+   this.pool.acquire(function(err, connection) {
+      if(err) {
+         console.log("TediousPooler :"+err,'error');
+      }
+      else {
+         callback(connection);
+      }
+   });
 }
-
-
-TediousPooler.prototype.execSql = function(request) {
-	this.pool.acquire(function(err, connection) {
-		connection.execSql(request);
-	});
-}
-
-TediousPooler.prototype.execSqlBatch = function(request) {
-	this.pool.acquire(function(err, connection) {
-		connection.execSqlBatch(request);
-	});
-}
-
-TediousPooler.prototype.execute = function(request, parameters) {
-	this.pool.acquire(function(err, connection) {
-		connection.execute(request, parameters);
-	});
-}
-
-TediousPooler.prototype.prepare = function(request) {
-	this.pool.acquire(function(err, connection) {
-		connection.prepare(request);
-	});
-}
-
-
-TediousPooler.prototype.unprepare = function (request) {
-	this.pool.acquire(function(err, connection) {
-		connection.unprepare(request);
-	});
-}
-
-TediousPooler.prototype.callProcedure = function(request) {
-	this.pool.acquire(function(err, connection) {
-		connection.callProcedure(request);
-	});
-}
-
-
