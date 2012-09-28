@@ -10,10 +10,8 @@ function TediousPooler(settings) {
    var param = {
       name: settings.name,
       create: function(callback) {
-	 var ref = this,
-             connection = new Connection(settings);
-
-         connection.on('connect', function(err) {
+         connection = new Connection(settings);
+	 connection.on('connect', function(err) {
             console.log('connected');
             if (err) {
                self.logger.log("TediousPooler :"+err,'error'); 
@@ -41,7 +39,7 @@ util.inherits(TediousPooler, events.EventEmitter);
 
 
 TediousPooler.prototype.execute = function(callback) {
-   var ref = this;
+   var self = this;
    this.pool.acquire(function(err, connection) {
       if(err) {
          self.looger.log("TediousPooler :"+err,'error');

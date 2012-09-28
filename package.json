@@ -5,11 +5,14 @@
   "preferGlobal" : false,
   "version": "0.0.1",
   "repository": {
-    "type": "http",
+    "type": "https",
     "url": "https://github.com/e11137/TediousPooler.git"
   },
   "engines": {
-    "node": ">= 0.8.0"
+    "node": "0.6 || 0.7 || 0.8"
   },
-  "devDependencies": {}
+  "dependencies": {
+    "tedious": "0.0.7",
+    "generic-pool": "2.0.1"
+  }
 }
