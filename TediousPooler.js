@@ -1,7 +1,7 @@
 var util = require('util'),
     events = require('events'),
     PoolModule = require('generic-pool');
-//    Connection = require('tedious').Connection;
+    Connection = require('tedious').Connection;
 
 function TediousPooler(settings) {
    var self = this;
@@ -18,9 +18,6 @@ function TediousPooler(settings) {
             }
 	    else {
                callback(null, connection);
-               connection.on('reusable', function() {
-                  self.pool.release(connection);
-               });
             }
          });
       },
@@ -46,6 +43,7 @@ TediousPooler.prototype.execute = function(callback) {
       }
       else {
          callback(connection);
+	 self.pool.release(connection);
       }
    });
 }
