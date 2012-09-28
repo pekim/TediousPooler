@@ -11,6 +11,7 @@
   "engines": {
     "node": "0.6 || 0.7 || 0.8"
   },
+  "main" : "./TediousPooler.js",
   "dependencies": {
     "tedious": "0.0.7",
     "generic-pool": "2.0.1"
