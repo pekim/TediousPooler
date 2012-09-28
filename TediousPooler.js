@@ -1,12 +1,12 @@
 var util = require('util'),
     events = require('events'),
-    PoolModule = require('generic-pool'),
-    Connection = require('tedious').Connection;
+    PoolModule = require('generic-pool');
+//    Connection = require('tedious').Connection;
 
 function TediousPooler(settings) {
    var self = this;
    this.logger = settings.logger || {log:function(level, message){ console.log(level+':'+message);}};
-   this.logger.log("info", "test");
+   
    var param = {
       name: settings.name,
       create: function(callback) {
@@ -16,7 +16,7 @@ function TediousPooler(settings) {
          connection.on('connect', function(err) {
             console.log('connected');
             if (err) {
-               console.log("TediousPooler :"+err,'error'); 
+               self.logger.log("TediousPooler :"+err,'error'); 
             }
 	    else {
                callback(null, connection);
@@ -44,7 +44,7 @@ TediousPooler.prototype.execute = function(callback) {
    var ref = this;
    this.pool.acquire(function(err, connection) {
       if(err) {
-         console.log("TediousPooler :"+err,'error');
+         self.looger.log("TediousPooler :"+err,'error');
       }
       else {
          callback(connection);
